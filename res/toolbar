@@ -1,6 +1,7 @@
 pagequery>	* | .* | exclude ns: ^ |-ns: | include ns: @ | ns: | . | .. | text | regex
 fulltext	Full-text search of page content
 fullregex	Search the full page id using regex
+fulltextregex Full-text search of page content using regex
 sort=column:direction	Keys to sort by, in order of sorting
 - a, ab, abc	By 1st letter, 2-letters, or 3-letters
 - name, pagename	By page name [not grouped]

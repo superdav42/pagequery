@@ -831,6 +831,53 @@ class PageQuery {
         $result = array_keys(ft_pageSearch($query, $highlight));
         return $result;
     }
+    
+    
+    /**
+     * use regex to search all page content
+     *
+     * @param $query
+     * @param $incl_ns
+     * @param $excl_ns
+     * @return mixed
+     */
+    function page_search_regex($query, $incl_ns, $excl_ns) {
+
+        $query = trim($query);
+        $pages = idx_get_indexer()->getPages();
+        
+        // first deal with excluded namespaces, then included, order matters!
+        $pages = $this->_filter_ns($pages, $excl_ns, true);
+        $pages = $this->_filter_ns($pages, $incl_ns, false);
+
+        $cnt = count($pages);
+        for ($i = 0; $i < $cnt; $i++) {
+            $page = $pages[$i];
+            
+            $text = io_readFile(wikiFN($page, '', false), false);
+            
+            $matched = preg_match('/' . $query . '/i', $text);
+            if ($matched === false) {
+                return false;
+            } elseif ($matched == 0) {
+                unset($pages[$i]);
+            }
+        }
+        
+        foreach($pages as $key => $page) {
+            if ( ! page_exists($page) || isHiddenPage($page)) {
+                unset($pages[$key]);
+            }
+        }
+        
+        if (count($pages) > 0) {
+            return $pages;
+        } else {
+            // we always return an array type
+            return array();
+        }
+    }
+    
 
 
     /**
@@ -841,7 +888,7 @@ class PageQuery {
         global $conf;
 
         $query = trim($query);
-        $pages = file($conf['indexdir'] . '/page.idx');
+        $pages = idx_get_indexer()->getPages();
 
         if ( ! $fullregex) {
             // first deal with excluded namespaces, then included, order matters!

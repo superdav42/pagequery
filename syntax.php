@@ -76,6 +76,7 @@ class syntax_plugin_pagequery extends DokuWiki_Syntax_Plugin {
         $opt['fontsize']  = '';         // base fontsize of pagequery; best to use %
         $opt['fullregex'] = false;      // power-user regex search option--file name only
         $opt['fulltext']  = false;      // search full-text; including file contents
+        $opt['fulltextregex']  = false; // search full-text; including file contents, using preg_match
         $opt['group']     = false;      // group the results based on sort headings
         $opt['hidejump']  = false;      // hide the jump to top link
         $opt['hidemsg']   = false;      // hide any error messages
@@ -99,6 +100,7 @@ class syntax_plugin_pagequery extends DokuWiki_Syntax_Plugin {
                 case 'casesort':
 				case 'fullregex':
                 case 'fulltext':
+                case 'fulltextregex':
                 case 'group':
                 case 'hidejump':
                 case 'hidemsg':
@@ -272,8 +274,14 @@ class syntax_plugin_pagequery extends DokuWiki_Syntax_Plugin {
                 if ($query == '*') {
                     $query = '.*';
                 }
-                // search by page name or path only
-                $results = $pq->page_lookup($query, $opt['fullregex'], $incl_ns, $excl_ns);
+                
+                if($opt['fulltextregex'] == true) {
+                    // search by page name or path only
+                    $results = $pq->page_search_regex($query, $incl_ns, $excl_ns);
+                } else {
+                    // search by page name or path only
+                    $results = $pq->page_lookup($query, $opt['fullregex'], $incl_ns, $excl_ns);
+                }
             }
             $results = $pq->validate_pages($results, $opt['hidestart'], $opt['maxns']);
 
