@@ -856,7 +856,7 @@ class PageQuery {
             
             $text = io_readFile(wikiFN($page, '', false), false);
             
-            $matched = preg_match('/' . $query . '/i', $text);
+            $matched = preg_match('/' . $query . '/iS', $text);
             if ($matched === false) {
                 return false;
             } elseif ($matched == 0) {
@@ -911,7 +911,7 @@ class PageQuery {
              *  and the page-exists check above
              * The @ prevents problems with invalid queries!
              */
-            $matched = @preg_match('/' . $query . '/i', $page);
+            $matched = @preg_match('/' . $query . '/iS', $page);
             if ($matched === false) {
                 return false;
             } elseif ($matched == 0) {
